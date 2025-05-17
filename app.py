@@ -1,5 +1,4 @@
 # ml-intelligent-medical-chat-with-appointment-booking-location-mapping-and-mail
-
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
