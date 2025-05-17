@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediChat - AI Doctor Consultation</title>
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --dark: #34495e;
+            --light: #ecf0f1;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+        }
+
+        .btn-dark {
+            background-color: var(--dark);
+        }
+
+        /* Header Styles */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .logo span {
+            color: var(--secondary);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .active {
+            color: var(--primary) !important;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 80px 0;
+            background: linear-gradient(135deg, var(--primary) 0%, #45aaf2 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Forms */
+        .form-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: 50px auto;
+        }
+
+        .form-container h2 {
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        /* Dashboard */
+        .dashboard {
+            padding: 40px 0;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        /* Chatbot */
+        .chat-container {
+            max-width: 800px;
+            margin: 50px auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .chat-messages {
+            height: 400px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 20px;
+            max-width: 70%;
+        }
+
+        .user-message {
+            background-color: var(--primary);
+            color: white;
+            margin-left: auto;
+            border-top-right-radius: 0;
+        }
+
+        .bot-message {
+            background-color: #e9e9e9;
+            border-top-left-radius: 0;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid #ddd;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px 0 0 5px;
+            font-size: 16px;
+        }
+
+        .chat-input button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        /* Tables */
+        .table-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin: 30px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 40px 0;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 20px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-section a {
+            color: #ddd;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: var(--primary);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* About page */
+        .about-section {
+            padding: 60px 0;
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .about-image {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .about-image img {
+            width: 100%;
+            height: auto;
+        }
+
+        /* Contact page */
+        .contact-section {
+            padding: 60px 0;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .contact-card {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .contact-card i {
+            font-size: 24px;
+            color: var(--primary);
+            margin-right: 15px;
+        }
+
+        /* Media Queries */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .about-content, .contact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+        .location-btn {
+    display: inline-block;
+    padding: 8px 15px;
+    background-color: transparent;
+    color: #3498db;
+    border: 2px solid #3498db;
+    border-radius: 8px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.location-btn:hover {
+    background-color: #3498db;
+    color: white;
+}
+
+    </style>
+</head>
+<body>
+    <!-- Header with Navigation -->
+    <header id="header">
+        <div class="container">
+            <nav>
+                <div class="logo">Medi<span>Chat</span></div>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="#" class="active" data-page="home">Home</a></li>
+                    <li><a href="#" data-page="about">About</a></li>
+                    <li><a href="#" data-page="contact">Contact</a></li>
+                    <li><a href="#" data-page="patient-login">Patient</a></li>
+                    <li><a href="#" data-page="doctor-login">Doctor</a></li>
+                    <li><a href="#" id="logoutBtn" style="display: none;">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area - Dynamic Content Will Be Loaded Here -->
+    <main id="mainContent">
+        <!-- Home Page Content (Default) -->
+        <section id="home" class="page-section">
+            <div class="hero">
+                <div class="container">
+                    <h1>Your Health, Our Priority</h1>
+                    <p>MediChat connects you with AI and real doctors for instant consultation and personalized care.</p>
+                    <a href="#" class="btn btn-secondary" data-page="patient-login">Get Started</a>
+                </div>
+            </div>
+            <div class="container">
+                <div class="features" style="padding: 60px 0; text-align: center;">
+                    <h2 style="margin-bottom: 40px;">Our Features</h2>
+                    <div class="dashboard-cards">
+                        <div class="card">
+                            <h3>AI Doctor Consultation</h3>
+                            <p>Get instant medical advice from our sophisticated AI chatbot trained on medical data.</p>
+                        </div>
+                        <div class="card">
+                            <h3>Book Appointments</h3>
+                            <p>Schedule appointments with real doctors for in-depth consultation and treatment.</p>
+                        </div>
+                        <div class="card">
+                            <h3>Medical History</h3>
+                            <p>Keep track of your consultations and prescriptions in one secure place.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Page Content -->
+        <section id="about" class="page-section" style="display: none;">
+            <div class="about-section">
+                <div class="container">
+                    <h2 style="text-align: center; margin-bottom: 40px;">About MediChat</h2>
+                    <div class="about-content">
+                        <div class="about-image">
+                            <img src="/api/placeholder/600/400" alt="Medical Team">
+                        </div>
+                        <div class="about-text">
+                            <h3>Our Mission</h3>
+                            <p>MediChat aims to bridge the gap between patients and healthcare by providing instant medical advice through our AI-powered chatbot and connecting patients with qualified doctors.</p>
+                            
+                            <h3 style="margin-top: 20px;">Our Technology</h3>
+                            <p>Our AI chatbot is trained on extensive medical data to provide accurate initial assessments and suggestions. However, we always ensure human oversight and encourage consultation with real doctors for conclusive diagnoses.</p>
+                            
+                            <h3 style="margin-top: 20px;">The Team</h3>
+                            <p>Our team consists of experienced healthcare professionals and AI experts dedicated to improving healthcare accessibility for everyone.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Page Content -->
+        <section id="contact" class="page-section" style="display: none;">
+            <div class="contact-section">
+                <div class="container">
+                    <h2 style="text-align: center; margin-bottom: 40px;">Contact Us</h2>
+                    <div class="contact-grid">
+                        <div class="contact-info">
+                            <div class="contact-card">
+                                <i>📞</i>
+                                <div>
+                                    <h3>Phone</h3>
+                                    <p> +91 9123456789</p>
+                                </div>
+                            </div>
+                            <div class="contact-card">
+                                <i>✉️</i>
+                                <div>
+                                    <h3>Email</h3>
+                                    <p>support@medichat.com</p>
+                                </div>
+                            </div>
+                            <div class="contact-card">
+                                <i>🏢</i>
+                                <div>
+                                    <h3>Address</h3>
+                                    <p>123 Medical Center Blvd, Health City, HC 12345</p>
+                                </div>
+                            </div>
+                            <div class="contact-card">
+                                <i>⏰</i>
+                                <div>
+                                    <h3>Working Hours</h3>
+                                    <p>Monday - Friday: 9am - 5pm</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-container" style="margin: 0;">
+                            <h3>Send Us a Message</h3>
+                            <form id="contactForm">
+                                <div class="form-group">
+                                    <label for="contactName">Name</label>
+                                    <input type="text" id="contactName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="contactEmail">Email</label>
+                                    <input type="email" id="contactEmail" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="contactSubject">Subject</label>
+                                    <input type="text" id="contactSubject" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="contactMessage">Message</label>
+                                    <textarea id="contactMessage" rows="5" required></textarea>
+                                </div>
+                                <button type="submit" class="btn">Send Message</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Patient Login Page -->
+        <section id="patient-login" class="page-section" style="display: none;">
+            <div class="container">
+                <div class="form-container">
+                    
+                    <form id="patientLoginForm">
+                        <h2>Patient Login</h2>
+                        <div class="form-group">
+                            <label for="patientEmail">Email</label>
+                            <input type="email" id="patientEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="patientPassword">Password</label>
+                            <input type="password" id="patientPassword" required>
+                        </div>
+                        <button type="submit" class="btn">Login</button>
+                        <p style="margin-top: 20px; text-align: center;">
+                            Don't have an account? <a href="#" id="patientRegisterLink">Register</a>
+                        </p>
+                    </form>
+                    <!-- Hidden Registration Form -->
+                    <form id="patientRegisterForm" style="display: none;">
+                        <h2>Patient Registration</h2>
+                        <div class="form-group">
+                            <label for="regPatientName">Full Name</label>
+                            <input type="text" id="regPatientName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regPatientEmail">Email</label>
+                            <input type="email" id="regPatientEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regPatientPassword">Password</label>
+                            <input type="password" id="regPatientPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="regPatientPhone">Phone</label>
+                            <input type="tel" id="regPatientPhone" required>
+                        </div>
+                        <button type="submit" class="btn">Register</button>
+                        <p style="margin-top: 20px; text-align: center;">
+                            Already have an account? <a href="#" id="patientLoginLink">Login</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section id="doctor-login" class="page-section" style="display: none;">
+            <div class="container">
+              <div class="form-container">
+          
+                <!-- Doctor Login Form -->
+                <form id="doctorLoginForm">
+                  <h2>Doctor Login</h2>
+                  <div class="form-group">
+                    <label for="doctorEmail">Email</label>
+                    <input type="email" id="doctorEmail" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="doctorPassword">Password</label>
+                    <input type="password" id="doctorPassword" required>
+                  </div>
+                  <button type="submit" class="btn">Login</button>
+                </form>
+          
+                <!-- Only visible when Login form is shown -->
+                <p id="switchToSignup" style="text-align: center; margin-top: 10px;">
+                  Don't have an account?
+                  <button onclick="
+                    document.getElementById('doctorLoginForm').style.display='none';
+                    document.getElementById('switchToSignup').style.display='none';
+                    document.getElementById('doctorRegisterForm').style.display='block';
+                    loadHospitals();
+                  ">
+                    Doctor Signup
+                  </button>
+                </p>
+          
+                <!-- Doctor Registration Form -->
+                <form id="doctorRegisterForm" style="display: none; margin-top: 20px;">
+                  <h2>Doctor Registration</h2>
+          
+                  <div class="form-group">
+                    <label for="regDoctorName">Full Name</label>
+                    <input type="text" id="regDoctorName" required>
+                  </div>
+          
+                  <div class="form-group">
+                    <label for="regDoctorEmail">Email</label>
+                    <input type="email" id="regDoctorEmail" required>
+                  </div>
+          
+                  <div class="form-group">
+                    <label for="regDoctorPassword">Password</label>
+                    <input type="password" id="regDoctorPassword" required>
+                  </div>
+          
+                  <div class="form-group">
+                    <label for="regDoctorPhone">Phone</label>
+                    <input type="tel" id="regDoctorPhone" required>
+                  </div>
+          
+                  <div class="form-group">
+                    <label for="regDoctorSpecialization">Specialization</label>
+                    <input type="text" id="regDoctorSpecialization" required>
+                  </div>
+          
+                  <div class="form-group">
+                    <label for="regDoctorQualification">Qualification</label>
+                    <input type="text" id="regDoctorQualification" required>
+                  </div>
+          
+                  <div class="form-group">
+                    <label for="regDoctorExperience">Experience (Years)</label>
+                    <input type="number" id="regDoctorExperience" required>
+                  </div>
+          
+                  <div class="form-group">
+                    <label for="regDoctorFee">Consultation Fee</label>
+                    <input type="number" id="regDoctorFee" step="0.01" required>
+                  </div>
+          
+                  <div class="form-group">
+                    <label for="regDoctorHospital">Hospital Location</label>
+                    <select id="regDoctorHospital" required>
+                      <option value="">--Select Hospital--</option>
+                    </select>
+                  </div>
+          
+                  <button type="submit" class="btn">Register</button>
+                </form>
+          
+              </div>
+            </div>
+          </section>
+          
+        
+        <!-- Patient Dashboard -->
+        <section id="patient-dashboard" class="page-section" style="display: none;">
+            <div class="dashboard">
+                <div class="container">
+                    <div class="dashboard-header">
+                        <h2>Patient Dashboard</h2>
+                        <div>
+                            <span id="patientName">John Doe</span>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-cards">
+                        <div class="card">
+                            <h3>Chat with AI Doctor</h3>
+                            <p>Get instant medical advice from our AI-powered chatbot.</p>
+                            <a href="#" class="btn" id="chatWithBotBtn">Start Chat</a>
+                        </div>
+                        <div class="card">
+                            <h3>Book Appointment</h3>
+                            <p>Schedule an appointment with a real doctor.</p>
+                            <a href="#" class="btn" id="bookAppointmentBtn">Book Now</a>
+                        </div>
+                        <div class="card">
+                            <h3>View Appointments</h3>
+                            <p>Check your upcoming and past appointments.</p>
+                            <a href="#" class="btn" id="viewAppointmentsBtn">View All</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chat with Bot Page -->
+        <section id="chat-with-bot" class="page-section" style="display: none;">
+            <div class="container">
+                <h2 style="margin: 40px 0 20px; text-align: center;">Chat with AI Doctor</h2>
+                <div class="chat-container">
+                    <div class="chat-header">
+                        <h3>MediChat AI Doctor</h3>
+                    </div>
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message bot-message">
+                            Hello! I'm your AI medical assistant. Please describe your symptoms or health concerns, and I'll try to help. Remember, I'm here to provide information but not to replace professional medical advice.
+                        </div>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" id="messageInput" placeholder="Type your message...">
+                        <button id="sendMessageBtn">Send</button>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="#" class="btn btn-secondary" id="backToPatientDashboard">Back to Dashboard</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Book Appointment Page -->
+        <section id="book-appointment" class="page-section" style="display: none;">
+            <div class="container">
+                <h2 style="margin: 40px 0 20px; text-align: center;">Book an Appointment</h2>
+                <div class="form-container">
+                    <form id="appointmentForm">
+                        <div class="form-group">
+                            <label for="appointmentDoctor">Select Doctor</label>
+                            <select id="appointmentDoctor" required>
+                                <option value="">--Select a Doctor--</option>
+                                <option value="1">Dr. Sarah Johnson - Cardiologist</option>
+                                <option value="2">Dr. Michael Chen - General Physician</option>
+                                <option value="3">Dr. Emily Rodriguez - Dermatologist</option>
+                                <option value="4">Dr. David Smith - Neurologist</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="appointmentDate">Date</label>
+                            <input type="date" id="appointmentDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="appointmentTime">Time</label>
+                            <select id="appointmentTime" required>
+                                <option value="">--Select a Time--</option>
+                                <option value="09:00">9:00 AM</option>
+                                <option value="10:00">10:00 AM</option>
+                                <option value="11:00">11:00 AM</option>
+                                <option value="14:00">2:00 PM</option>
+                                <option value="15:00">3:00 PM</option>
+                                <option value="16:00">4:00 PM</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="appointmentReason">Reason for Visit</label>
+                            <textarea id="appointmentReason" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="btn">Book Appointment</button>
+                    </form>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="#" class="btn btn-secondary" id="backFromBooking">Back to Dashboard</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- View Appointments Page -->
+        <section id="view-appointments" class="page-section" style="display: none;">
+            <div class="container">
+                <h2 style="margin: 40px 0 20px; text-align: center;">Your Appointments</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Doctor</th>
+                                <th>Reason</th>
+                                <th>Status</th>
+                                <th>Location</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointmentsTable">
+                            <!-- Sample data - would be populated dynamically -->
+                            <tr>
+                                <td>2025-04-05</td>
+                                <td>10:00 AM</td>
+                                <td>Dr. Michael Chen</td>
+                                <td>Regular checkup</td>
+                                <td>Confirmed</td>
+                            </tr>
+                            <tr>
+                                <td>2025-04-10</td>
+                                <td>2:00 PM</td>
+                                <td>Dr. Sarah Johnson</td>
+                                <td>Heart palpitations</td>
+                                <td>Pending</td>
+                            </tr>
+                            <tr>
+                                <td>2025-03-21</td>
+                                <td>11:00 AM</td>
+                                <td>Dr. Emily Rodriguez</td>
+                                <td>Skin rash assessment</td>
+                                <td>Completed</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="#" class="btn btn-secondary" id="backFromViewAppointments">Back to Dashboard</a>
+                </div>
+            </div>
+        </section>
+<!-- Doctor Dashboard -->
+<section id="doctor-dashboard" class="page-section" style="display: none;">
+    <div class="dashboard">
+        <div class="container">
+            <div class="dashboard-header">
+                <h2>Doctor Dashboard</h2>
+                <div>
+                    <span id="doctorNameDisplay">Dr. Sarah Johnson</span><br>
+                    <small id="doctorHospitalDisplay" style="color: gray;"></small>
+                  </div>
+                  
+            </div>
+            
+             <!--<div class="dashboard-cards">
+                <div class="card">
+                    <h3>Patient Details</h3>
+                    <p>View all your patient records and medical history.</p>
+                    <a href="#" class="btn" id="viewPatientDetailsBtn">View Patients</a>
+                </div>
+                <div class="card">
+                    <h3>View Appointments</h3>
+                    <p>Check upcoming and past appointments.</p>
+                    <a href="#" class="btn" id="doctorViewAppointmentsBtn">View All</a>
+                </div>-->
+                <div class="card">
+                    <h3>Appointment Requests</h3>
+                    <p>Accept or decline pending appointment requests.</p>
+                    <table id="doctorAppointmentsTable" class="appointments-table">
+                        <!-- Table rows will be inserted by JavaScript -->
+                <!-- Always show action buttons regardless of status -->
+                    </table>
+                    <a href="#" class="btn" id="acceptAppointmentsBtn">Manage Requests</a>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+        <!-- Doctor - Patient Details Page -->
+        <section id="doctor-patient-details" class="page-section" style="display: none;">
+            <div class="container">
+                <h2 style="margin: 40px 0 20px; text-align: center;">Patient Records</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Patient ID</th>
+                                <th>Name</th>
+                                <th>Age</th>
+                                <th>Gender</th>
+                                <th>Last Visit</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Sample data - would be populated dynamically -->
+                            <tr>
+                                <td>P001</td>
+                                <td>John Doe</td>
+                                <td>42</td>
+                                <td>Male</td>
+                                <td>2025-03-21</td>
+                                <td><a href="#" class="btn btn-secondary" style="padding: 5px 10px;">View Details</a></td>
+                            </tr>
+                            <tr>
+                                <td>P002</td>
+                                <td>Jane Smith</td>
+                                <td>35</td>
+                                <td>Female</td>
+                                <td>2025-03-15</td>
+                                <td><a href="#" class="btn btn-secondary" style="padding: 5px 10px;">View Details</a></td>
+                            </tr>
+                            <tr>
+                                <td>P003</td>
+                                <td>Robert Johnson</td>
+                                <td>58</td>
+                                <td>Male</td>
+                                <td>2025-03-28</td>
+                                <td><a href="#" class="btn btn-secondary" style="padding: 5px 10px;">View Details</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="#" class="btn btn-secondary" id="backFromPatientDetails">Back to Dashboard</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Doctor - View Appointments Page -->
+        <section id="doctor-view-appointments" class="page-section" style="display: none;">
+            <div class="container">
+                <h2 style="margin: 40px 0 20px; text-align: center;">Your Appointments</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Patient</th>
+                                <th>Reason</th>
+                                <th>Status</th>
+                                <th>Location</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Sample data - would be populated dynamically -->
+                            <tr>
+                                <td>2025-04-05</td>
+                                <td>10:00 AM</td>
+                                <td>John Doe</td>
+                                <td>Regular checkup</td>
+                                <td>Confirmed</td>
+                            </tr>
+                            <tr>
+                                <td>2025-04-10</td>
+                                <td>2:00 PM</td>
+                                <td>Jane Smith</td>
+                                <td>Heart palpitations</td>
+                                <td>Confirmed</td>
+                            </tr>
+                            <tr>
+                                <td>2025-04-03</td>
+                                <td>11:00 AM</td>
+                                <td>Robert Johnson</td>
+                                <td>Prescription renewal</td>
+                                <td>Completed</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="#" class="btn btn-secondary" id="backFromDoctorViewAppointments">Back to Dashboard</a>
+                </div>
+            </div>
+        </section>
+<!-- Doctor - Accept Appointments Page -->
+<section id="doctor-accept-appointments" class="page-section" style="display: none;">
+    <div class="container">
+        <h2 style="margin: 40px 0 20px; text-align: center;">Appointment Requests</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Patient</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="doctorRequestTableBody">
+                    <!-- Dynamic appointment rows will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="#" class="btn btn-secondary" id="backFromAcceptAppointments">Back to Dashboard</a>
+        </div>
+    </div>
+</section>
+
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>MediChat</h3>
+                    <p>Bridging the gap between patients and healthcare with AI-powered solutions and professional medical consultations.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#" data-page="home">Home</a></li>
+                        <li><a href="#" data-page="about">About</a></li>
+                        <li><a href="#" data-page="contact">Contact</a></li>
+                        <li><a href="#" data-page="patient-login">Patient Login</a></li>
+                        <li><a href="#" data-page="doctor-login">Doctor Login</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Us</h3>
+                    <ul>
+                        <li>📞 +1 (555) 123-4567</li>
+                        <li>✉️ support@medichat.com</li>
+                        <li>🏢 , Health City, HC 12345</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 MediChat</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Store current user data
+        let currentUser = null;
+        let userType = null;
+        //document.getElementById('acceptAppointmentsBtn').addEventListener('click', () => {
+    //loadDoctorAppointments(true);  // Pass a flag to filter
+    //});
+
+
+        // Sample data for chatbot responses
+        const botResponses = {
+            "headache": "Headaches can be caused by various factors including stress, dehydration, or eye strain. If it's persistent or severe, I recommend consulting with a doctor. Would you like to book an appointment?",
+            "fever": "A fever might indicate an infection. Make sure to rest, stay hydrated, and take antipyretics if needed. If the fever persists for more than 2 days or exceeds 102°F (39°C), please consult a doctor immediately.",
+            "cough": "Coughs can be caused by infections, allergies, or irritants. For a dry cough, try honey and warm water. For a productive cough, ensure you're hydrated. If it persists for more than a week or is accompanied by other symptoms, consider seeing a doctor.",
+            "help": "I can help you understand common symptoms, provide basic medical advice, or assist in booking an appointment with a doctor. Please describe your symptoms or concerns."
+        };
+
+        // DOM elements
+        const mainContent = document.getElementById('mainContent');
+        const navLinks = document.getElementById('navLinks');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // Navigation system
+        function showPage(pageId) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page-section');
+            pages.forEach(page => page.style.display = 'none');
+            
+            // Show requested page
+            const pageToShow = document.getElementById(pageId);
+            if (pageToShow) {
+                pageToShow.style.display = 'block';
+            }
+            
+            // Update active link
+            const links = document.querySelectorAll('.nav-links a');
+            links.forEach(link => {
+                if (link.getAttribute('data-page') === pageId) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Set up navigation event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // Navigation link click handlers
+    const links = document.querySelectorAll('[data-page]');
+    links.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const pageId = this.getAttribute('data-page');
+
+            if ((pageId === 'patient-dashboard' || pageId === 'chat-with-bot' ||
+                pageId === 'book-appointment' || pageId === 'view-appointments') &&
+                (userType !== 'patient')) {
+                alert('Please login as a patient first.');
+                showPage('patient-login');
+                return;
+            }
+
+            if ((pageId === 'doctor-dashboard' || pageId === 'doctor-patient-details' ||
+                pageId === 'doctor-view-appointments' || pageId === 'doctor-accept-appointments') &&
+                (userType !== 'doctor')) {
+                alert('Please login as a doctor first.');
+                showPage('doctor-login');
+                return;
+            }
+
+            showPage(pageId);
+        });
+    });
+
+    // ✅ Patient Dashboard Buttons
+    const chatBtn = document.getElementById('chatWithBotBtn');
+    if (chatBtn) {
+        chatBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            showPage('chat-with-bot');
+        });
+    }
+
+    const bookBtn = document.getElementById('bookAppointmentBtn');
+    if (bookBtn) {
+        bookBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            showPage('book-appointment');
+        });
+    }
+
+    const viewAppointmentsBtn = document.getElementById('viewAppointmentsBtn');
+    if (viewAppointmentsBtn) {
+        viewAppointmentsBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            loadAppointments();
+            showPage('view-appointments');
+        });
+    }
+
+    // ✅ Doctor Dashboard Buttons
+    const viewPatientBtn = document.getElementById('viewPatientDetailsBtn');
+    if (viewPatientBtn) {
+        viewPatientBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            showPage('doctor-patient-details');
+        });
+    }
+
+    const doctorViewAppointmentsBtn = document.getElementById('doctorViewAppointmentsBtn');
+    if (doctorViewAppointmentsBtn) {
+        doctorViewAppointmentsBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            showPage('doctor-view-appointments');
+        });
+    }
+
+    const acceptAppointmentsBtn = document.getElementById('acceptAppointmentsBtn');
+    if (acceptAppointmentsBtn) {
+        acceptAppointmentsBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            loadDoctorAppointments();
+            showPage('doctor-accept-appointments');
+        });
+    }
+
+    // Populate doctor dropdown initially
+    populateDoctorDropdown();
+});
+
+
+// ✅ Function to fetch doctor list and fill the dropdown
+async function populateDoctorDropdown() {
+    try {
+        const response = await fetch('/api/doctors', {
+            credentials: 'include'
+        });
+
+        // Check if response is OK
+        if (!response.ok) {
+            const errorText = await response.text(); // Capture HTML error page if any
+            throw new Error(`Server Error: ${response.status} - ${errorText}`);
+        }
+
+        const data = await response.json();
+
+        if (data.success) {
+            const dropdown = document.getElementById('appointmentDoctor');
+            dropdown.innerHTML = '<option value="">--Select a Doctor--</option>';
+
+            data.doctors.forEach(doc => {
+                const option = document.createElement('option');
+                option.value = doc.id;
+                option.textContent = `${doc.name} - ${doc.specialization} (${doc.hospital_location})`;
+                dropdown.appendChild(option);
+            });
+        } else {
+            console.error('Backend error:', data.message);
+        }
+    } catch (err) {
+        console.error('Error loading doctors:', err);
+    }
+}
+
+
+            
+            // Back buttons
+            document.getElementById('backToPatientDashboard').addEventListener('click', function(e) {
+                e.preventDefault();
+                showPage('patient-dashboard');
+            });
+            
+            document.getElementById('backFromBooking').addEventListener('click', function(e) {
+                e.preventDefault();
+                showPage('patient-dashboard');
+            });
+            
+            document.getElementById('backFromViewAppointments').addEventListener('click', function(e) {
+                e.preventDefault();
+                showPage('patient-dashboard');
+            });
+            
+            document.getElementById('backFromPatientDetails').addEventListener('click', function(e) {
+                e.preventDefault();
+                showPage('doctor-dashboard');
+            });
+            
+            document.getElementById('backFromDoctorViewAppointments').addEventListener('click', function(e) {
+                e.preventDefault();
+                showPage('doctor-dashboard');
+            });
+            
+            document.getElementById('backFromAcceptAppointments').addEventListener('click', function(e) {
+                e.preventDefault();
+                showPage('doctor-dashboard');
+            });
+            
+            // Login/Register toggle for patient
+            document.getElementById('patientRegisterLink').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('patientLoginForm').style.display = 'none';
+                document.getElementById('patientRegisterForm').style.display = 'block';
+            });
+            
+            document.getElementById('patientLoginLink').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('patientRegisterForm').style.display = 'none';
+                document.getElementById('patientLoginForm').style.display = 'block';
+            });
+            document.getElementById('patientLoginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const email = document.getElementById('patientEmail').value;
+    const password = document.getElementById('patientPassword').value;
+
+    if (email && password) {
+        try {
+            const response = await fetch('http://127.0.0.1:5000/api/login', {
+
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include', // ✅ IMPORTANT: sends session cookie
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                currentUser = data.user;
+                userType = data.user.user_type;
+
+                // Show logout button
+                logoutBtn.style.display = 'inline-block';
+
+                // Update displayed name
+                document.getElementById('patientName').textContent = currentUser.name;
+
+                // Redirect to dashboard
+                showPage('patient-dashboard');
+            } else {
+                alert(data.message || 'Login failed');
+            }
+        } catch (err) {
+            console.error('Login error:', err);
+            alert('Something went wrong during login.');
+        }
+    }
+});
+
+            
+
+
+
+            
+            
+
+
+
+    
+    document.getElementById('doctorLoginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();  // << ONLY after e is available here
+
+    const email = document.getElementById('doctorEmail').value;
+    const password = document.getElementById('doctorPassword').value;
+
+    if (email && password) {
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include', 
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await response.json();
+
+            if (data.success && data.user.user_type === 'doctor') {
+                currentUser = data.user;
+                userType = 'doctor';
+
+                logoutBtn.style.display = 'inline-block';
+                document.getElementById('doctorNameDisplay').textContent = currentUser.name;
+
+                const doctorList = await fetch('/api/doctors', { credentials: 'include' }).then(r => r.json());
+                if (doctorList.success) {
+                    const doc = doctorList.doctors.find(d => d.id === currentUser.id);
+                    if (doc) {
+                        document.getElementById('doctorHospitalDisplay').textContent = `Hospital: ${doc.hospital_location}`;
+                    }
+                }
+
+                showPage('doctor-dashboard');
+            } else {
+                alert(data.message || 'Login failed. Make sure you are a registered doctor.');
+            }
+        } catch (err) {
+            console.error('Doctor login error:', err);
+            alert('Something went wrong during login.');
+        }
+    }
+});
+
+
+document.getElementById('patientRegisterForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const name = document.getElementById('regPatientName').value;
+    const email = document.getElementById('regPatientEmail').value;
+    const password = document.getElementById('regPatientPassword').value;
+    const phone = document.getElementById('regPatientPhone').value;
+
+    if (name && email && password && phone) {
+        try {
+            const response = await fetch('/api/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    name: name,
+                    email: email,
+                    password: password,
+                    phone: phone,
+                    user_type: 'patient'
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert('Registration successful. Please login now.');
+                document.getElementById('patientRegisterForm').style.display = 'none';
+                document.getElementById('patientLoginForm').style.display = 'block';
+            } else {
+                alert(data.message || 'Registration failed');
+            }
+        } catch (err) {
+            console.error('Registration error:', err);
+            alert('Something went wrong during registration.');
+        }
+    } else {
+        alert('Please fill all fields.');
+    }
+});
+
+document.getElementById('doctorRegisterForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const name = document.getElementById('regDoctorName').value.trim();
+    const email = document.getElementById('regDoctorEmail').value.trim().toLowerCase();
+    const password = document.getElementById('regDoctorPassword').value;
+    const phone = document.getElementById('regDoctorPhone').value.trim();
+    const specialization = document.getElementById('regDoctorSpecialization').value.trim();
+    const qualification = document.getElementById('regDoctorQualification').value.trim();
+    const experience = parseInt(document.getElementById('regDoctorExperience').value);
+    const fee = parseFloat(document.getElementById('regDoctorFee').value);
+    const location_id = document.getElementById('regDoctorHospital').value;  // ✅ NEW Line
+
+    try {
+        const response = await fetch('http://127.0.0.1:5000/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+                name,
+                email,
+                password,
+                phone,
+                user_type: 'doctor',
+                specialization,
+                qualification,
+                experience_years: experience,
+                consultation_fee: fee,
+                location_id: location_id   // ✅ SEND location_id to server
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert('Doctor registration successful! Please login.');
+            document.getElementById('doctorRegisterForm').style.display = 'none';
+            document.getElementById('doctorLoginForm').style.display = 'block';
+            document.getElementById('doctorEmail').value = email;
+        } else {
+            alert('Doctor registration failed: ' + result.message);
+        }
+    } catch (err) {
+        console.error("Registration error:", err);
+        alert("An error occurred during registration. Please check console for details.");
+    }
+});
+
+
+            
+            document.getElementById('appointmentForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const doctorId = document.getElementById('appointmentDoctor').value;
+                const date = document.getElementById('appointmentDate').value;
+                const time = document.getElementById('appointmentTime').value;
+                const reason = document.getElementById('appointmentReason').value;
+                
+                // In a real app, store appointment in database
+                // For demo, just check if fields are filled
+                 // Validate form fields
+    if (!doctorId || !date || !time || !reason) {
+        alert('Please fill in all required fields');
+        return;
+    }
+    
+    try {
+        // Send appointment data to backend API
+        const response = await fetch('/api/appointments', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include', // Important for session cookies
+            body: JSON.stringify({
+                doctor_id: doctorId,
+                date: date,
+                time: time,
+                reason: reason
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('Appointment booked successfully! Please check your appointments for status updates.');
+            // Reset form
+            document.getElementById('appointmentForm').reset();
+            // Load appointments and show appointments page
+            loadAppointments();  
+            showPage('view-appointments');  // Show appointments page instead of dashboard
+        } else {
+            alert('Failed to book appointment: ' + result.message);
+        }
+    } catch (err) {
+        console.error('Error booking appointment:', err);
+        alert('Something went wrong while booking your appointment. Please try again.');
+    }
+});
+            
+document.getElementById('contactForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const name = document.getElementById('contactName').value;
+    const email = document.getElementById('contactEmail').value;
+    const subject = document.getElementById('contactSubject').value;
+    const message = document.getElementById('contactMessage').value;
+
+    if (name && email && subject && message) {
+        try {
+            const response = await fetch('/api/contact', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name, email, subject, message })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert('✅ Message sent successfully!');
+                document.getElementById('contactForm').reset();
+            } else {
+                alert('❌ Failed: ' + result.message);
+            }
+        } catch (err) {
+            console.error('Error sending message:', err);
+            alert('❌ Something went wrong. Please try again.');
+        }
+    } else {
+        alert('Please fill in all fields.');
+    }
+});
+
+            
+            // Chatbot functionality
+            document.getElementById('sendMessageBtn').addEventListener('click', sendMessage);
+            document.getElementById('messageInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            logoutBtn.addEventListener('click', async function(e) {
+    e.preventDefault();
+
+    try {
+        await fetch('/api/logout', {
+            method: 'POST',
+            credentials: 'include' // ✅ sends the session cookie for logout
+        });
+    } catch (err) {
+        console.error('Logout failed:', err);
+    }
+
+    // Clear frontend user state
+    currentUser = null;
+    userType = null;
+
+    logoutBtn.style.display = 'none';
+    showPage('home');
+});
+
+            
+            // Show home page initially
+            showPage('home');
+    
+ 
+            ;
+
+
+// Also, enhance your loadAppointments function with better error handling:
+async function loadAppointments() {
+    try {
+        const response = await fetch('/api/appointments', {
+            method: 'GET',
+            credentials: 'include'
+        });
+
+        const data = await response.json();
+        const table = document.getElementById('appointmentsTable');
+        table.innerHTML = ''; // clear table body only, NOT header
+
+        if (data.success && data.appointments && data.appointments.length > 0) {
+            data.appointments.forEach(appt => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${appt.date}</td>
+                    <td>${appt.time}</td>
+                    <td>${appt.doctor.name} (${appt.doctor.specialization})</td>
+                    <td>${appt.reason}</td>
+                    <td><span class="status-${appt.status.toLowerCase()}">${appt.status}</span></td>
+                    <td>
+                        ${appt.doctor.hospital_location && appt.doctor.hospital_location !== 'Not Available' ? `
+                            <a href="https://www.google.com/maps/search/${encodeURIComponent(appt.doctor.hospital_location)}" target="_blank" class="btn btn-dark">
+                                📍 View Location
+                            </a>` : 'Not Available'}
+                    </td>
+                `;
+                table.appendChild(row);
+            });
+        } else {
+            table.innerHTML = '<tr><td colspan="6" style="text-align: center;">No appointments found</td></tr>';
+        }
+    } catch (err) {
+        console.error('Error loading appointments:', err);
+        const table = document.getElementById('appointmentsTable');
+        table.innerHTML = '<tr><td colspan="6" style="text-align: center; color: red;">Error loading appointments. Please try again.</td></tr>';
+    }
+}
+
+function sendMessage() {
+    const input = document.getElementById('messageInput');
+    const message = input.value.trim();
+
+    if (message) {
+        const chatBox = document.getElementById('chatMessages');
+        const userMessage = document.createElement('div');
+        userMessage.className = 'message user-message';
+        userMessage.textContent = message;
+        chatBox.appendChild(userMessage);
+
+        input.value = '';
+        // Optional: send message to backend or chatbot
+    }
+}
+async function loadDoctorAppointments() {
+    try {
+        const response = await fetch('/api/doctor/appointments', {
+            method: 'GET',
+            credentials: 'include'
+        });
+
+        const data = await response.json();
+
+        // ✅ Get the correct table body element
+        const table = document.getElementById('doctorRequestTableBody');
+        table.innerHTML = '';  // ✅ Clear old rows (static or dynamic)
+
+        if (data.success && data.appointments.length > 0) {
+data.appointments.forEach(appt => {
+    const row = document.createElement('tr');
+
+    const statusText = appt.status || 'Pending'; // Default to Pending if not set
+    let actionButtons = '';
+
+actionButtons = `
+    <button class="btn btn-secondary" onclick="updateAppointmentStatus(${appt.id}, 'Confirmed')">Accept</button>
+    <button class="btn btn-danger" onclick="updateAppointmentStatus(${appt.id}, 'Cancelled')">Decline</button>
+`;
+
+
+
+
+    row.innerHTML = `
+        <td>${appt.date}</td>
+        <td>${appt.time}</td>
+        <td>${appt.patient_name}</td>
+        <td>${appt.reason}</td>
+        <td><span class="status-${statusText.toLowerCase()}">${statusText}</span></td>
+        <td>${actionButtons}</td>
+    `;
+
+    table.appendChild(row);
+});
+
+
+        } else {
+            table.innerHTML = '<tr><td colspan="5" style="text-align: center;">No appointment requests found.</td></tr>';
+        }
+    } catch (err) {
+        console.error('Error loading doctor appointments:', err);
+        const table = document.getElementById('doctorRequestTableBody');
+        table.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Error loading appointments.</td></tr>';
+    }
+}
+
+function updateAppointmentStatus(appointmentId, status) {
+    fetch(`/api/appointments/${appointmentId}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+        credentials: 'include'
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log(data);
+        if (data.success) {
+            loadDoctorAppointments();
+        } else {
+            alert(`❌ Failed: ${data.message}`);
+        }
+    })
+    .catch(err => {
+        console.error('Error updating status:', err);
+        alert('❌ Error updating appointment status.');
+    });
+}
+async function loadHospitals() {
+    const response = await fetch('/api/hospitals');
+    const data = await response.json();
+    const dropdown = document.getElementById('regDoctorHospital');
+    dropdown.innerHTML = '<option value="">--Select Hospital--</option>';
+    data.hospitals.forEach(h => {
+        const option = document.createElement('option');
+        option.value = h.id;
+        option.textContent = h.name;
+        dropdown.appendChild(option);
+
+      
+    });
+}
+
+
+
+        
+    </script>
+</body>
+</html>
